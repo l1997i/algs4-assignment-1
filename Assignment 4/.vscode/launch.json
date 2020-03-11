@@ -16,14 +16,12 @@
             "name": "Debug Board",
             "request": "launch",
             "mainClass": "Board",
-            "projectName": "Assignment 4_34c21039"
         },
         {
             "type": "java",
             "name": "Debug Solver",
             "request": "launch",
             "mainClass": "Solver",
-            "projectName": "Assignment 4_34c21039",
             "args": "Data/puzzle04.txt"
         },
     ]

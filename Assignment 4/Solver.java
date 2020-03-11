@@ -9,7 +9,6 @@ public class Solver {
     private MinPQ<SearchNode> solutionMinPQ = new MinPQ<>();
     private MinPQ<SearchNode> finalSolution = new MinPQ<>();
     private SearchNode finalNode;
-    private int movesN = -1;
 
     private class SearchNode implements Comparable<SearchNode> {
         Board board;
@@ -72,7 +71,7 @@ public class Solver {
 
     // min number of moves to solve initial board
     public int moves() {
-        return movesN;
+        return finalNode.moves;
     }
 
     // sequence of boards in a shortest solution
@@ -107,7 +106,6 @@ public class Solver {
                     throw new java.util.NoSuchElementException(
                             "you cannot calls next() method in the iterator when there are no more items to return.");
                 }
-                movesN++;
                 return finalSolution.delMin().board;
             }
         }
