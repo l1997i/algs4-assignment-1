@@ -43,16 +43,12 @@ public class Solver {
         }
         SearchNode initialSearchNode = new SearchNode(initial);
         solutionMinPQ.insert(initialSearchNode);
-        // solutionMinPQ.delMin();
-        // for (Board board : initialSearchNode.board.neighbors()) {
-        // SearchNode child = new SearchNode(board);
-        // child.previous = initialSearchNode;
-        // child.moves = 1;
-        // }
         SearchNode currentNode = initialSearchNode;
         do {
             currentNode = solutionMinPQ.delMin();
             for (Board neighborBoard : currentNode.board.neighbors()) {
+                if (currentNode.previous!=null && neighborBoard.equals(currentNode.previous.board))
+                    continue;
                 SearchNode neighborNode = new SearchNode(neighborBoard);
                 neighborNode.previous = currentNode;
                 neighborNode.moves = currentNode.moves + 1;

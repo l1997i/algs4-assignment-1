@@ -92,10 +92,10 @@ public class Board {
 
     // does this board equal y?
     public boolean equals(final Object y) {
-        Board that = (Board)y;
-        for (int i=0; i<size; i++){
-            for (int j = 0; j<size; j++){
-                if (that.tiles[i][j]!=tiles[i][j]){
+        Board that = (Board) y;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (that.tiles[i][j] != tiles[i][j]) {
                     return false;
                 }
             }
@@ -218,8 +218,16 @@ public class Board {
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-        // TODO:
-        return this;
+        final int[][] newTiles = new int[size][size];
+        for (int a = 0; a < size; a++) {
+            for (int b = 0; b < size; b++) {
+                newTiles[a][b] = tiles[a][b];
+            }
+        }
+        int temp = newTiles[0][0];
+        newTiles[0][0] = newTiles[0][1];
+        newTiles[0][1] = temp;
+        return new Board(newTiles);
     }
 
     public int[] find(final int[][] tiles, final int value) {
@@ -300,6 +308,7 @@ public class Board {
         for (final Board neighbor : testBoard.neighbors()) {
             StdOut.print(neighbor);
         }
+        StdOut.println("testBoard twin: " + testBoard.twin());
 
     }
 }
