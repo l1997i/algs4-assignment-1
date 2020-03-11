@@ -6,9 +6,8 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
 
-    private MinPQ<SearchNode> solutionMinPQ = new MinPQ<>();
-    private MinPQ<SearchNode> finalSolution = new MinPQ<>();
     private SearchNode finalNode;
+    private boolean solvable = false;
 
     private class SearchNode implements Comparable<SearchNode> {
         Board board;
@@ -22,89 +21,128 @@ public class Solver {
         @Override
         public int compareTo(SearchNode that) {
             // Override compareTo method using the Manhattan priority function
-            if (this.board.manhattan()+this.moves < that.board.manhattan()+that.moves) {
+            if (this.board.manhattan() + this.moves < that.board.manhattan() + that.moves) {
                 return -1;
-            } else if (this.board.manhattan()+this.moves > that.board.manhattan()+that.moves) {
+            } else if (this.board.manhattan() + this.moves > that.board.manhattan() + that.moves) {
                 return 1;
-            } else {    // priority is equal
+            } else { // priority is equal
                 if (this.moves < that.moves)
                     return -1;
-                else if (this.moves>that.moves)
-                    return 1;    
+                else if (this.moves > that.moves)
+                    return 1;
             }
             return 0;
         }
     }
 
-    // find a solution to the initial board (using A* algorithm)
     public Solver(Board initial) {
         if (initial == null) {
             throw new IllegalArgumentException("The argument in the constructor is null!");
         }
-        SearchNode initialSearchNode = new SearchNode(initial);
-        solutionMinPQ.insert(initialSearchNode);
-        SearchNode currentNode = initialSearchNode;
+        MinPQ<SearchNode> solutionA = new MinPQ<>();
+        MinPQ<SearchNode> solutionB = new MinPQ<>();
+        SearchNode initialSearchNodeA = new SearchNode(initial);
+        SearchNode initialSearchNodeB = new SearchNode(initial.twin());
+        solutionA.insert(initialSearchNodeA);
+        solutionB.insert(initialSearchNodeB);
+        SearchNode currentNodeA = initialSearchNodeA;
+        SearchNode currentNodeB = initialSearchNodeB;
         do {
-            currentNode = solutionMinPQ.delMin();
-            for (Board neighborBoard : currentNode.board.neighbors()) {
-                if (currentNode.previous!=null && neighborBoard.equals(currentNode.previous.board))
-                    continue;
-                SearchNode neighborNode = new SearchNode(neighborBoard);
-                neighborNode.previous = currentNode;
-                neighborNode.moves = currentNode.moves + 1;
-                solutionMinPQ.insert(neighborNode);
-            }
-        } while (!currentNode.board.isGoal());
-        finalNode = currentNode;
+            currentNodeA = solutionA.delMin();
+            currentNodeB = solutionB.delMin();
+            Iterator<Board> searchA = currentNodeA.board.neighbors().iterator();
+            Iterator<Board> searchB = currentNodeB.board.neighbors().iterator();
+            while (searchA.hasNext() || searchB.hasNext()) {
 
+                if (searchA.hasNext()) {
+                    Board nextA = searchA.next();
+                    if (!(currentNodeA.previous != null && nextA.equals(currentNodeA.previous.board))) {
+                        SearchNode neighborNodeA = new SearchNode(nextA);
+                        neighborNodeA.previous = currentNodeA;
+                        neighborNodeA.moves = currentNodeA.moves + 1;
+                        solutionA.insert(neighborNodeA);
+                    }
+                }
+
+                if (searchB.hasNext()) {
+                    Board nextB = searchB.next();
+                    if (!(currentNodeB.previous != null && nextB.equals(currentNodeB.previous.board))) {
+                        SearchNode neighborNodeB = new SearchNode(nextB);
+                        neighborNodeB.previous = currentNodeB;
+                        neighborNodeB.moves = currentNodeB.moves + 1;
+                        solutionB.insert(neighborNodeB);
+                    }
+                }
+            }
+        } while (!currentNodeA.board.isGoal() && !currentNodeB.board.isGoal());
+        if (currentNodeA.board.isGoal()) {
+            finalNode = currentNodeA;
+            solvable = true;
+        } else {
+            finalNode = currentNodeB;
+            solvable = false;
+        }
     }
 
     // is the initial board solvable?
     public boolean isSolvable() {
-        // TODO:
-        return true;
+        return solvable;
     }
 
     // min number of moves to solve initial board
     public int moves() {
+        if (!solvable){
+            return -1;
+        }
+
         return finalNode.moves;
     }
 
     // sequence of boards in a shortest solution
     public Iterable<Board> solution() {
-        finalSolution.insert(finalNode);
-        SearchNode iteratorNode = finalNode;
-        while (iteratorNode.previous!=null){
-            iteratorNode = iteratorNode.previous;
-            finalSolution.insert(iteratorNode);
+        if (!solvable){
+            return null;
         }
+
+        SearchNode[] iteratorSolution = new SearchNode[moves()+1];
+        int i = 1;
+        iteratorSolution[0] = finalNode;
+        SearchNode iteratorNode = finalNode;
+        while (iteratorNode.previous != null) {
+            iteratorNode = iteratorNode.previous;
+            iteratorSolution[i] = iteratorNode;
+            i++;
+        }
+
+        class IterableSolution implements Iterable<Board> {
+            @Override
+            public Iterator<Board> iterator() {
+                return new BoardIterator();
+            }
+
+            class BoardIterator implements Iterator<Board> {
+                int k = iteratorSolution.length-1;
+
+                @Override
+                public boolean hasNext() {
+                    return k>=0;
+                }
+
+                @Override
+                public Board next() {
+                    if (!hasNext()) {
+                        throw new java.util.NoSuchElementException(
+                                "you cannot calls next() method in the iterator when there are no more items to return.");
+                    }
+                    return iteratorSolution[k--].board;
+                }
+            }
+        }
+        
+
+        
         return new IterableSolution();
 
-    }
-
-    private class IterableSolution implements Iterable<Board> {
-
-        @Override
-        public Iterator<Board> iterator() {
-            return new BoardIterator();
-        }
-
-        private class BoardIterator implements Iterator<Board> {
-
-            @Override
-            public boolean hasNext() {
-                return !finalSolution.isEmpty();
-            }
-
-            @Override
-            public Board next() {
-                if (!hasNext()) {
-                    throw new java.util.NoSuchElementException(
-                            "you cannot calls next() method in the iterator when there are no more items to return.");
-                }
-                return finalSolution.delMin().board;
-            }
-        }
     }
 
     // test client

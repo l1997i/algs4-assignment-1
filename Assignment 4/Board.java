@@ -5,6 +5,9 @@ import edu.princeton.cs.algs4.StdOut;
 public class Board {
     final private int[][] tiles;
     private final int size;
+    private int isGoal = -1;
+    private int d_hamming = -1;
+    private int d_manhattan = -1;
 
     // create a board from and n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
@@ -32,6 +35,10 @@ public class Board {
 
     // number of tiles out of place
     public int hamming() {
+        if (d_hamming != -1) {
+            return d_hamming;
+        }
+
         int distance = 0;
         int k = 1;
         for (int i = 0; i < size; i++) {
@@ -42,11 +49,15 @@ public class Board {
                 k++;
             }
         }
-        return distance;
+        d_hamming = distance;
+        return d_hamming;
     }
 
     // sum of Manhattan distance between tiles and goal
     public int manhattan() {
+        if (d_manhattan != -1) {
+            return d_manhattan;
+        }
         int distance = 0;
         int k = 1;
         for (int i = 0; i < size; i++) {
@@ -61,12 +72,32 @@ public class Board {
                 }
             }
         }
-        return distance;
+        d_manhattan = distance;
+        return d_manhattan;
     }
 
     // is this board the goal board?
     public boolean isGoal() {
-        return hamming() == 0;
+        if (d_hamming != -1) {
+            return d_hamming == 0;
+        }
+
+        if (isGoal!=-1){
+            return isGoal==1;
+        }
+
+        int k = 1;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (k != tiles[i][j] && tiles[i][j] != 0) {
+                    isGoal = 0;
+                    return false;
+                }
+                k++;
+            }
+        }
+        isGoal = 1;
+        return true;
     }
 
     // does this board equal y?
@@ -290,8 +321,6 @@ public class Board {
         StdOut.println("testBoardC is Goal? " + testBoardC.isGoal());
         StdOut.println("testBoard is equal to testTilesB? " + testBoard.equals(testBoardB));
         StdOut.println(testBoard.dimension());
-        StdOut.println("testBoard hash: " + testBoard.hashCode());
-        StdOut.println("testBoardB hash: " + testBoardB.hashCode());
         for (final Board neighbor : testBoard.neighbors()) {
             StdOut.print(neighbor);
         }
