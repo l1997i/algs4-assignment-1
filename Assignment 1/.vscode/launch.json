@@ -1,0 +1,39 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Percolation",
+            "request": "launch",
+            "mainClass": "Percolation",
+            "projectName": "chapter 1_af2e7de9"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - PercolationStats",
+            "request": "launch",
+            "mainClass": "PercolationStats",
+            "args": "200 100",
+            "projectName": "chapter 1_af2e7de9"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - PercolationVisualizer",
+            "request": "launch",
+            "mainClass": "PercolationVisualizer",
+            "args": "myData/input20.txt",
+            "projectName": "chapter 1_af2e7de9"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - java InteractivePercolationVisualizer",
+            "request": "launch",
+            "mainClass": "InteractivePercolationVisualizer",
+            "args": "4",
+            "projectName": "chapter 1_af2e7de9"
+        }
+    ]
+}

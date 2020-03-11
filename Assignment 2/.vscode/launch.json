@@ -1,0 +1,36 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Deque<chapter 2_9e4783a7>",
+            "request": "launch",
+            "mainClass": "Deque",
+            "projectName": "chapter 2_9e4783a7"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Permutation<chapter 2_9e4783a7>",
+            "request": "launch",
+            "mainClass": "Permutation",
+            "projectName": "chapter 2_9e4783a7",
+            "args": "8 < data/distinct.txt"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-RandomizedQueue<chapter 2_9e4783a7>",
+            "request": "launch",
+            "mainClass": "RandomizedQueue",
+            "projectName": "chapter 2_9e4783a7"
+        }
+    ]
+}

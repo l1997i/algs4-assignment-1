@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e8abd305-fcf7-498f-a8fd-93f271a097da" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1YWNd0wBDfGsUysw0yqwzpdKhaN" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="experimental" />
+  </component>
+  <component name="RunManager" selected="Application.BruteCollinearPoints">
+    <configuration name="BruteCollinearPoints" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="BruteCollinearPoints" />
+      <module name="Assignment 3" />
+      <option name="PROGRAM_PARAMETERS" value="data/randomTest.txt" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FastCollinearPoints" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="FastCollinearPoints" />
+      <module name="Assignment 3" />
+      <option name="PROGRAM_PARAMETERS" value="data/randomTest.txt" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Point" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="Point" />
+      <module name="Assignment 3" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.Point" />
+      <item itemvalue="Application.BruteCollinearPoints" />
+      <item itemvalue="Application.FastCollinearPoints" />
+    </list>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e8abd305-fcf7-498f-a8fd-93f271a097da" name="Default Changelist" comment="" />
+      <created>1583054473549</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1583054473549</updated>
+      <workItem from="1583054476807" duration="11108000" />
+      <workItem from="1583074265479" duration="141000" />
+      <workItem from="1583074434816" duration="1408000" />
+      <workItem from="1583121127747" duration="7647000" />
+      <workItem from="1583137187412" duration="5544000" />
+      <workItem from="1583147544451" duration="10726000" />
+      <workItem from="1583205627629" duration="12306000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="440" y="190" key="#Project_Structure" timestamp="1583054499742">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="440" y="190" key="#Project_Structure/0.0.1680.1050@0.0.1680.1050" timestamp="1583054499742" />
+    <state x="612" y="212" key="#com.intellij.codeInsight.template.impl.EditVariableDialog" timestamp="1583055697539">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="612" y="212" key="#com.intellij.codeInsight.template.impl.EditVariableDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1583055697539" />
+    <state x="303" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1583218714330">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="303" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1583218714330" />
+    <state x="626" y="236" key="#com.intellij.ide.macro.MacrosDialog" timestamp="1583126476159">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="626" y="236" key="#com.intellij.ide.macro.MacrosDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1583126476159" />
+    <state x="576" y="314" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1583143478263">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="576" y="314" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1583143478263" />
+    <state x="8" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1583126857301">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="8" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1583126857301" />
+    <state x="578" y="286" key="#com.intellij.util.ui.classpath.ChooseLibrariesDialog" timestamp="1583054496367">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="578" y="286" key="#com.intellij.util.ui.classpath.ChooseLibrariesDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1583054496367" />
+    <state width="531" height="466" key="DebuggerActiveHint" timestamp="1583221318950">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="531" height="466" key="DebuggerActiveHint/0.0.1680.1050@0.0.1680.1050" timestamp="1583221318950" />
+    <state width="531" height="466" key="DebuggerActiveHint/0.23.1680.953@0.23.1680.953" timestamp="1583159328917" />
+    <state width="531" height="466" key="DebuggerActiveHint/0.23.1680.955@0.23.1680.955" timestamp="1583159507875" />
+    <state x="593" y="296" key="EnvironmentVariablesDialog" timestamp="1583126464924">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="593" y="296" key="EnvironmentVariablesDialog/0.0.1680.1050@0.0.1680.1050" timestamp="1583126464924" />
+    <state width="1636" height="234" key="GridCell.Tab.0.bottom" timestamp="1583222058716">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1636" height="234" key="GridCell.Tab.0.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1583222058716" />
+    <state width="1636" height="234" key="GridCell.Tab.0.center" timestamp="1583222058715">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1636" height="234" key="GridCell.Tab.0.center/0.0.1680.1050@0.0.1680.1050" timestamp="1583222058715" />
+    <state width="1636" height="234" key="GridCell.Tab.0.left" timestamp="1583222058714">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1636" height="234" key="GridCell.Tab.0.left/0.0.1680.1050@0.0.1680.1050" timestamp="1583222058714" />
+    <state width="1636" height="234" key="GridCell.Tab.0.right" timestamp="1583222058716">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1636" height="234" key="GridCell.Tab.0.right/0.0.1680.1050@0.0.1680.1050" timestamp="1583222058716" />
+    <state width="1636" height="234" key="GridCell.Tab.1.bottom" timestamp="1583222058718">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1636" height="234" key="GridCell.Tab.1.bottom/0.0.1680.1050@0.0.1680.1050" timestamp="1583222058718" />
+    <state width="1636" height="234" key="GridCell.Tab.1.center" timestamp="1583222058717">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1636" height="234" key="GridCell.Tab.1.center/0.0.1680.1050@0.0.1680.1050" timestamp="1583222058717" />
+    <state width="1636" height="234" key="GridCell.Tab.1.left" timestamp="1583222058717">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1636" height="234" key="GridCell.Tab.1.left/0.0.1680.1050@0.0.1680.1050" timestamp="1583222058717" />
+    <state width="1636" height="234" key="GridCell.Tab.1.right" timestamp="1583222058718">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state width="1636" height="234" key="GridCell.Tab.1.right/0.0.1680.1050@0.0.1680.1050" timestamp="1583222058718" />
+    <state x="517" y="124" key="SettingsEditor" timestamp="1583074611212">
+      <screen x="0" y="0" width="1680" height="1050" />
+    </state>
+    <state x="517" y="124" key="SettingsEditor/0.0.1680.1050@0.0.1680.1050" timestamp="1583074611212" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/BruteCollinearPoints.java</url>
+          <line>17</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

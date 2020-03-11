@@ -1,0 +1,149 @@
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdOut;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class FastCollinearPoints {
+
+    private int n = 0;
+    private Point[] pts;
+    private ArrayList<LineSegment> line4pointsSegments = new ArrayList<>();
+    private Point _ONE = new Point(0, 0);
+    private Point _TWO = new Point(1, 1);
+    private LineSegment _ZSEGMENT = new LineSegment(_ONE, _TWO);
+
+    /**
+     * finds all line segments containing 4 or more points
+     *
+     * @param points finds all line segments within these points
+     */
+    public FastCollinearPoints(Point[] points) {
+        // TODO:
+        int i = 0;
+        n = 0;
+        pts = new Point[points.length];
+        for (Point point : points) {
+            if (point == null) {
+                throw new IllegalArgumentException("The argument to the constructor cannot be null");
+            }
+            pts[i] = point;
+            i++;
+        }
+    }
+
+    /**
+     * the number of line segments
+     *
+     * @return the number of line segments
+     */
+    public int numberOfSegments() {
+        // TODO:
+        return n;
+    }
+
+    private boolean aequal(double a, double b) {
+        double eps = 1e-4;
+        return Math.abs(a - b) < eps;
+    }
+
+    private LineSegment getRange(Point a, Point b, Point currentP) {
+        Point[] sortP = new Point[3];
+        sortP[0] = a;
+        sortP[1] = b;
+        sortP[2] = currentP;
+        Arrays.sort(sortP);
+
+
+        if (sortP[0] == currentP) {
+            return new LineSegment(sortP[0], sortP[2]);
+        }
+        return _ZSEGMENT;
+
+    }
+
+    public LineSegment[] segments() {
+        // TODO:
+        Arrays.sort(pts);
+        Point[] initPs = new Point[pts.length];
+        System.arraycopy(pts, 0, initPs, 0, pts.length);
+
+        for (int i = 0; i < pts.length; i++) {
+            System.arraycopy(initPs, 0, pts, 0, initPs.length);
+
+
+            Point P = pts[i];
+            Arrays.sort(pts, pts[i].slopeOrder());
+            int begin = 0;   // the index of begin point
+            int end = 1;      // the index of end point
+            double k_begin = 0;
+            double k_end = 0;
+            boolean exitFlag = false;
+            boolean getFlag = false;
+            while (end < pts.length) {
+                if (exitFlag) {
+                    LineSegment res = getRange(pts[begin], pts[end], P);
+                    if (res != _ZSEGMENT) {
+                        line4pointsSegments.add(res);
+                        getFlag = false;
+                        exitFlag = false;
+                    }
+                    //break;
+                }
+                k_begin = P.slopeTo(pts[begin]);
+                k_end = P.slopeTo(pts[end]);
+
+                if (end - begin >= 3) {
+                    getFlag = true;
+                }
+
+                if (getFlag) {
+                    if (!aequal(k_begin, k_end)) {
+                        end--;
+                        exitFlag = true;
+                    } else {
+                        end++;
+                    }
+                } else {
+                    if (!aequal(k_begin, k_end)) {
+                        begin++;
+                    }
+                    end++;
+                }
+            }
+        }
+        LineSegment[] myResult = new LineSegment[line4pointsSegments.size()];
+        myResult = line4pointsSegments.toArray(myResult);
+        return myResult;
+    }
+
+    public static void main(String[] args) {
+        // read the n points from a file
+        In in = new In(args[0]);
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
+
+        // draw the points
+        StdDraw.enableDoubleBuffering();
+        StdDraw.setXscale(0, 32768);
+        StdDraw.setYscale(0, 32768);
+        for (Point p : points) {
+            p.draw();
+        }
+        StdDraw.show();
+
+        // print and draw the line segments
+        FastCollinearPoints collinear = new FastCollinearPoints(points);
+        for (LineSegment segment : collinear.segments()) {
+            StdOut.println(segment);
+            segment.draw();
+        }
+        StdDraw.show();
+    }
+}
