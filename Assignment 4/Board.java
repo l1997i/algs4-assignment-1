@@ -1,12 +1,9 @@
-import java.util.Arrays;
 import java.util.Iterator;
 
 import edu.princeton.cs.algs4.StdOut;
 
 public class Board {
     final private int[][] tiles;
-    private final int[][] goal;
-    private int hash = 0;
     private final int size;
 
     // create a board from and n-by-n array of tiles,
@@ -14,31 +11,6 @@ public class Board {
     public Board(final int[][] tiles) {
         this.tiles = tiles.clone();
         size = tiles[0].length;
-        goal = new int[size][size];
-
-        final int[] temp = new int[size * size - 1];
-        int k = 0;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (tiles[i][j] != 0) {
-                    temp[k] = tiles[i][j];
-                    k++;
-                }
-            }
-        }
-        k = 0;
-
-        Arrays.sort(temp);
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (k < size * size - 1) {
-                    goal[i][j] = temp[k];
-                }
-                k++;
-            }
-        }
-        goal[size - 1][size - 1] = 0;
-
     }
 
     // string representation of this board
@@ -61,11 +33,13 @@ public class Board {
     // number of tiles out of place
     public int hamming() {
         int distance = 0;
+        int k = 1;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (goal[i][j] != tiles[i][j] && tiles[i][j] != 0) {
+                if (k != tiles[i][j] && tiles[i][j] != 0) {
                     distance++;
                 }
+                k++;
             }
         }
         return distance;
@@ -74,11 +48,16 @@ public class Board {
     // sum of Manhattan distance between tiles and goal
     public int manhattan() {
         int distance = 0;
+        int k = 1;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (goal[i][j] != tiles[i][j] && tiles[i][j] != 0) {
-                    final int[] goalIndex = find(goal, tiles[i][j]);
-                    distance += (Math.abs(goalIndex[0] - i) + Math.abs(goalIndex[1] - j));
+                if (k != tiles[i][j]) {
+                    int[] index = find(tiles, k);
+                    distance += (Math.abs(index[0] - i) + Math.abs(index[1] - j));
+                }
+                k++;
+                if (k == size * size) {
+                    break;
                 }
             }
         }
@@ -92,7 +71,16 @@ public class Board {
 
     // does this board equal y?
     public boolean equals(final Object y) {
+        if (!(y instanceof Board)) {
+            return false;
+        }
+
         Board that = (Board) y;
+
+        if (that.tiles.length != this.tiles.length || that.tiles[0].length != this.tiles[0].length) {
+            return false;
+        }
+
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (that.tiles[i][j] != tiles[i][j]) {
@@ -103,7 +91,7 @@ public class Board {
         return true;
     }
 
-    public class IterableBoard implements Iterable<Board> {
+    private class IterableBoard implements Iterable<Board> {
 
         private int location = -2;
         private final int[] zeroIndex;
@@ -224,13 +212,25 @@ public class Board {
                 newTiles[a][b] = tiles[a][b];
             }
         }
-        int temp = newTiles[0][0];
-        newTiles[0][0] = newTiles[0][1];
-        newTiles[0][1] = temp;
+        int index_i = 0;
+        int index_j = 0;
+
+        OutterLoop: for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (newTiles[i][j] != 0 && newTiles[i + 1][j] != 0) {
+                    index_i = i;
+                    index_j = j;
+                    break OutterLoop;
+                }
+            }
+        }
+        int temp = newTiles[index_i][index_j];
+        newTiles[index_i][index_j] = newTiles[index_i + 1][index_j];
+        newTiles[index_i + 1][index_j] = temp;
         return new Board(newTiles);
     }
 
-    public int[] find(final int[][] tiles, final int value) {
+    private int[] find(final int[][] tiles, final int value) {
         final int[] index = new int[2];
         index[0] = -1;
         index[1] = -1;
@@ -246,7 +246,7 @@ public class Board {
         return index; // not find
     }
 
-    public int locateNeighbors(final int i, final int j) {
+    private int locateNeighbors(final int i, final int j) {
         final boolean isHead = i == 0;
         final boolean isFoot = i == size - 1;
         final boolean isLeft = j == 0;
@@ -273,21 +273,6 @@ public class Board {
         return 5;
     }
 
-    public int hashCode() {
-        int h = hash;
-        if (h != 0) {
-            return h;
-        }
-        h = 3;
-        for (int i = 0; i < tiles.length; i++) {
-            for (int j = 0; j < tiles.length; j++) {
-                h = 5 * h + tiles[i][j];
-            }
-        }
-        hash = h;
-        return h;
-    }
-
     // unit testing
     public static void main(final String[] args) {
         final int[][] testTiles = { { 1, 3, 9, 4 }, { 11, 2, 5, 10 }, { 7, 8, 6, 12 }, { 15, 13, 14, 0 } };
@@ -299,6 +284,8 @@ public class Board {
         StdOut.print(testBoard.toString());
         StdOut.println("Hamming: " + testBoard.hamming());
         StdOut.println("Manhattan: " + testBoard.manhattan());
+        StdOut.println("Hamming B: " + testBoardB.hamming());
+        StdOut.println("Manhattan B: " + testBoardB.manhattan());
         StdOut.println("testBoard is Goal? " + testBoard.isGoal());
         StdOut.println("testBoardC is Goal? " + testBoardC.isGoal());
         StdOut.println("testBoard is equal to testTilesB? " + testBoard.equals(testBoardB));
@@ -308,7 +295,7 @@ public class Board {
         for (final Board neighbor : testBoard.neighbors()) {
             StdOut.print(neighbor);
         }
-        StdOut.println("testBoard twin: " + testBoard.twin());
+        StdOut.println("testBoard twin: \n" + testBoard.twin());
 
     }
 }

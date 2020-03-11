@@ -82,7 +82,7 @@ public class Solver {
 
     }
 
-    public class IterableSolution implements Iterable<Board> {
+    private class IterableSolution implements Iterable<Board> {
 
         @Override
         public Iterator<Board> iterator() {
