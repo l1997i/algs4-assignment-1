@@ -5,7 +5,6 @@ import edu.princeton.cs.algs4.StdOut;
 public class Board {
     final private int[][] tiles;
     private final int size;
-    private int isGoal = -1;
     private int d_hamming = -1;
     private int d_manhattan = -1;
 
@@ -81,22 +80,19 @@ public class Board {
         if (d_hamming != -1) {
             return d_hamming == 0;
         }
-
-        if (isGoal!=-1){
-            return isGoal==1;
+        if (d_manhattan != -1) {
+            return d_manhattan == 0;
         }
 
         int k = 1;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (k != tiles[i][j] && tiles[i][j] != 0) {
-                    isGoal = 0;
                     return false;
                 }
                 k++;
             }
         }
-        isGoal = 1;
         return true;
     }
 
@@ -124,7 +120,7 @@ public class Board {
 
     private class IterableBoard implements Iterable<Board> {
 
-        private int location = -2;
+        private final int location;
         private final int[] zeroIndex;
 
         public IterableBoard(final int[] index) {
@@ -139,7 +135,7 @@ public class Board {
 
         private class BoardIterator implements Iterator<Board> {
             private int index = 0;
-            private int[][][] tilesIterator;
+            private final int[][][] tilesIterator;
 
             public BoardIterator(final int location) {
                 final int i = zeroIndex[0];
@@ -202,8 +198,10 @@ public class Board {
             private int[][] moveTo(final int i, final int j) {
                 final int[][] newTiles = new int[size][size];
                 for (int a = 0; a < size; a++) {
+                    int[] newTiles_a = newTiles[a];
+                    int[] tiles_a = tiles[a];
                     for (int b = 0; b < size; b++) {
-                        newTiles[a][b] = tiles[a][b];
+                        newTiles_a[b] = tiles_a[b];
                     }
                 }
                 newTiles[zeroIndex[0]][zeroIndex[1]] = newTiles[i][j];
@@ -239,8 +237,10 @@ public class Board {
     public Board twin() {
         final int[][] newTiles = new int[size][size];
         for (int a = 0; a < size; a++) {
+            int[] newTiles_a = newTiles[a];
+            int[] tiles_a = tiles[a];
             for (int b = 0; b < size; b++) {
-                newTiles[a][b] = tiles[a][b];
+                newTiles_a[b] = tiles_a[b];
             }
         }
         int index_i = 0;

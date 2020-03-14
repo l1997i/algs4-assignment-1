@@ -22,7 +22,7 @@
             "name": "Debug Solver",
             "request": "launch",
             "mainClass": "Solver",
-            "args": "Data/puzzle04.txt"
+            "args": "Data/puzzle36.txt"
         },
     ]
 }
