@@ -4,5 +4,7 @@
 - **Score**: 100 (Full score 100)
 
 Correctness:  51/51 tests passed
+
 Memory:       22/22 tests passed
+
 Timing:       125/125 tests passed
