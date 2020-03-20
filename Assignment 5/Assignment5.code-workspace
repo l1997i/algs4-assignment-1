@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"java.project.referencedLibraries": [
+			"lib/**/*.jar",
+			"/Users/l1997i/Desktop/algs4-assignment-1/Assignment 1/lib/algs4.jar"
+		]
+	}
+}
