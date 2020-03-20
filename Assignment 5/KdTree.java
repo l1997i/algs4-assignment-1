@@ -25,161 +25,148 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public class KdTree {
 
-    private xyBST<Point2D, Integer> points;
-
     /**
      * construct an empty set of points
      */
     public KdTree() {
-        points = new xyBST<>();
+        // TODO:
+    }
 
+    private Node root; // root of BST
+
+    private class Node {
+        private Point2D key; // sorted by key
+        private int val; // associated data
+        private Node left, right; // left and right subtrees
+        private int size; // number of nodes in subtree
+
+        public Node(Point2D key, int val, int size) {
+            this.key = key;
+            this.val = val;
+            this.size = size;
+        }
     }
 
     /**
-     * <p>
-     * This is a private class from KdTree which is another BST implementation of
-     * {@code Point2D} set.
-     * </p>
-     * 
-     * <p>
-     * Its insert operation is a bit different from normal {@code BST} At the root
-     * use the x-coordinates (if the point to be inserted has a smaller x-coordinate
-     * than the point at the root, go left; otherwise go right); then at the next
-     * level, we use the y-coordinate (if the point to be inserted has a smaller
-     * y-coordinate than the point at the root, go left; otherwise go right); then
-     * at the next level the x-coordinate, and so forth.
-     * </p>
-     * 
-     * @param <Key>   {@code Point2D} to be inserted
-     * @param <Value> associated data
-     * @author Li Li
-     * @since Mar. 20, 2020
+     * Returns the smallest key in the symbol table.
+     *
+     * @return the smallest key in the symbol table
      */
+    private Point2D min() {
+        return min(root).key;
+    } 
 
-    private class xyBST<Key extends Comparable<Key>, Value> extends BST<Point2D, Integer> {
-        private Node root; // root of BST
+    private Node min(Node x) { 
+        if (x.left == null) return x; 
+        else                return min(x.left); 
+    } 
 
-        private class Node {
-            private Key key; // sorted by key
-            private Value val; // associated data
-            private Node left, right; // left and right subtrees
-            private int size; // number of nodes in subtree
+    /**
+     * Returns the largest key in the symbol table.
+     *
+     * @return the largest key in the symbol table
+     */
+    private Point2D max() {
+        return max(root).key;
+    } 
 
-            public Node(Key key, Value val, int size) {
-                this.key = key;
-                this.val = val;
-                this.size = size;
-            }
+    private Node max(Node x) {
+        if (x.right == null) return x; 
+        else                 return max(x.right); 
+    } 
+
+    // private Iterable<Point2D> keys() {
+    //     return keys(min(), max());
+    // }
+
+    // private Iterable<Point2D> keys(Point2D lo, Point2D hi) {
+
+    //     if (lo == null)
+    //         throw new IllegalArgumentException("first argument to keys() is null");
+    //     if (hi == null)
+    //         throw new IllegalArgumentException("second argument to keys() is null");
+
+    //     Queue<Point2D> queue = new Queue<Point2D>();
+    //     keys(root, queue, lo, hi, 0);
+    //     return queue;
+    // }
+
+    // private void keys(Node x, Queue<Point2D> queue, Point2D lo, Point2D hi, int times) {
+    //     if (x == null)
+    //         return;
+
+    //     int cmplo = comparePoint2D(lo, x.key, times);
+    //     int cmphi = comparePoint2D(hi, x.key, times);
+    //     if (cmplo < 0)
+    //         keys(x.left, queue, lo, hi, ++times);
+    //     if (cmplo <= 0 && cmphi >= 0)
+    //         queue.enqueue((Point2D) x.key);
+    //     if (cmphi > 0)
+    //         keys(x.right, queue, lo, hi, ++times);
+    // }
+
+    private int comparePoint2D(Point2D a, Point2D b, int times){
+        double aCompare = 0.0;
+        double bCompare = 0.0;
+        if (times % 2 == 0) {
+            aCompare = a.x();
+            bCompare = b.x();
+        } else {
+            aCompare = a.y();
+            bCompare = b.y();
         }
 
-        /**
-         * Returns all keys in the symbol table in the given range, as an
-         * {@code Iterable}.
-         *
-         * @param lo minimum endpoint
-         * @param hi maximum endpoint
-         * @return all keys in the symbol table between {@code lo} (inclusive) and
-         *         {@code hi} (inclusive)
-         * @throws IllegalArgumentException if either {@code lo} or {@code hi} is
-         *                                  {@code null}
-         */
-
-        public Iterable<Point2D> keys() {
-            return keys(min(), max());
+        if (aCompare < bCompare) {
+            return -1;
+        } else if (aCompare > bCompare) {
+            return 1;
+        } else {
+            return 0;
         }
+    }
 
-        public Iterable<Point2D> keys(Point2D lo, Point2D hi) {
-
-            if (lo == null)
-                throw new IllegalArgumentException("first argument to keys() is null");
-            if (hi == null)
-                throw new IllegalArgumentException("second argument to keys() is null");
-
-            Queue<Point2D> queue = new Queue<Point2D>();
-            keys(root, queue, lo, hi, 0);
-            return queue;
+    private int size(Node x) {
+        if (x == null) {
+            return 0;
+        } else {
+            return x.size;
         }
+    }
 
-        private void keys(Node x, Queue<Point2D> queue, Point2D lo, Point2D hi, int times) {
-            if (x == null)
-                return;
 
-            double loCompare = 0;
-            double hiCompare = 0;
-            double xCompare = 0;
-            if (times % 2 == 0) {
-                loCompare = lo.x();
-                hiCompare = hi.x();
-                xCompare = ((Point2D)x.key).x();
-            } else {
-                loCompare = lo.y();
-                hiCompare = hi.y();
-                xCompare = ((Point2D)x.key).y();
-            }
+    private void add(Point2D key, int val) {
+        if (key == null)
+            throw new IllegalArgumentException("calls add() with a null key");
+        root = add(root, key, val, 0);
+    }
 
-            int cmplo = comparexy(loCompare, xCompare);
-            int cmphi = comparexy(hiCompare, xCompare);
-            if (cmplo < 0)
-                keys(x.left, queue, lo, hi, ++times);
-            if (cmplo <= 0 && cmphi >= 0)
-                queue.enqueue((Point2D)x.key);
-            if (cmphi > 0)
-                keys(x.right, queue, lo, hi, ++times);
-        }
+    private Node add(Node x, Point2D key, int val, int times) {
+        if (x == null)
+            return new Node(key, val, 1);
 
-        private int size(Node x) {
-            if (x == null) {
-                return 0;
-            } else {
-                return x.size;
-            }
-        }
+        int cmp = comparePoint2D(key, x.key, times);
+        if (cmp < 0)
+            x.left = add(x.left, key, val, ++times);
+        else if (cmp > 0)
+            x.right = add(x.right, key, val, ++times);
+        else
+            x.val = val;
 
-        private int comparexy(double a, double b) {
-            if (a < b) {
-                return -1;
-            } else if (a > b) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
+        x.size = 1 + size(x.left) + size(x.right);
+        return x;
+    }
 
-        public void add(Key key, Value val) {
-            if (key == null)
-                throw new IllegalArgumentException("calls add() with a null key");
-            if (val == null) {
-                // delete(key);
-                return;
-            }
-            root = add(root, key, val, 0);
-        }
+    private int get(Point2D key) {
+        return get(root, key);
+    }
 
-        private Node add(Node x, Key key, Value val, int times) {
-            if (x == null)
-                return new Node(key, val, 1);
-
-            double keyCompare = 0;
-            double xCompare = 0;
-            if (times % 2 == 0) {
-                keyCompare = ((Point2D) key).x();
-                xCompare = ((Point2D) x.key).x();
-            } else {
-                keyCompare = ((Point2D) key).y();
-                xCompare = ((Point2D) x.key).y();
-            }
-
-            int cmp = comparexy(keyCompare, xCompare);
-            if (cmp < 0)
-                x.left = add(x.left, key, val, ++times);
-            else if (cmp > 0)
-                x.right = add(x.right, key, val, ++times);
-            else
-                x.val = val;
-
-            x.size = 1 + size(x.left) + size(x.right);
-            return x;
-        }
+    private int get(Node x, Point2D key) {
+        if (key == null) throw new IllegalArgumentException("calls get() with a null key");
+        if (x == null) return -1;
+        int cmp = key.compareTo(x.key);
+        if      (cmp < 0) return get(x.left, key);
+        else if (cmp > 0) return get(x.right, key);
+        else              return x.val;
     }
 
     /**
@@ -188,7 +175,7 @@ public class KdTree {
      * @return true if is empty, otherwise false
      */
     public boolean isEmpty() {
-        return points.isEmpty();
+        return isEmpty();
     }
 
     /**
@@ -197,7 +184,7 @@ public class KdTree {
      * @return number of points in the set
      */
     public int size() {
-        return points.size();
+        return size(root);
     }
 
     /**
@@ -212,7 +199,7 @@ public class KdTree {
             throw new IllegalArgumentException();
         }
         if (!contains(p)) {
-            points.add(p, points.size());
+            add(p, size());
         }
 
     }
@@ -228,7 +215,7 @@ public class KdTree {
         if (p == null) { // corner cases
             throw new IllegalArgumentException();
         }
-        return points.contains(p);
+        return get(p) != -1;
     }
 
     /**
@@ -246,10 +233,6 @@ public class KdTree {
      */
     public void draw() {
         // TODO: draw()
-
-        for (Point2D point : points.keys()) {
-            point.draw();
-        }
     }
 
     /**
