@@ -161,20 +161,24 @@ public class PointSET {
         Point2D p10 = new Point2D(-4,3.6);
         Point2D p0 = new Point2D(-1,3.6);
         Point2D liar = new Point2D(-4,3.6);
-        RectHV rect = new RectHV(-4, -4, 4, 4);
-        testSET.insert(p1);
-        testSET.insert(p2);
-        testSET.insert(p3);
-        testSET.insert(p4);
-        testSET.insert(p5);
-        testSET.insert(p6);
-        testSET.insert(p7);
-        testSET.insert(p8);
-        testSET.insert(p9);
-        testSET.insert(p10);
-        StdOut.println("p1 nearest: "+testSET.nearest(p1));
-        StdOut.println("Is p0 contains: "+testSET.contains(p0));
-        StdOut.println("Is liar contains: "+testSET.contains(liar));
+        Point2D t1 = new Point2D(1, 0.5);
+        Point2D t2 = new Point2D(0, 1);
+        RectHV rect = new RectHV(0.25, 0.75, 0.75, 1);
+        // testSET.insert(p1);
+        // testSET.insert(p2);
+        // testSET.insert(p3);
+        // testSET.insert(p4);
+        // testSET.insert(p5);
+        // testSET.insert(p6);
+        // testSET.insert(p7);
+        // testSET.insert(p8);
+        // testSET.insert(p9);
+        // testSET.insert(p10);
+        testSET.insert(t1);
+        testSET.insert(t2);
+        // StdOut.println("p1 nearest: "+testSET.nearest(p1));
+        // StdOut.println("Is p0 contains: "+testSET.contains(p0));
+        // StdOut.println("Is liar contains: "+testSET.contains(liar));
         for (Point2D point : testSET.range(rect)){
             StdOut.print(point+"\t");
         }

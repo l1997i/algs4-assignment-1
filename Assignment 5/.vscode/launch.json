@@ -6,13 +6,6 @@
     "configurations": [
         {
             "type": "java",
-            "name": "CodeLens (Launch) - KdTreeVisualizer",
-            "request": "launch",
-            "mainClass": "KdTreeVisualizer",
-            "projectName": "Assignment 5_ec84295b"
-        },
-        {
-            "type": "java",
             "name": "PointSET",
             "request": "launch",
             "mainClass": "PointSET"
@@ -22,6 +15,13 @@
             "name": "KdTree",
             "request": "launch",
             "mainClass": "KdTree"
-        }
+        },
+        {
+            "type": "java",
+            "name": "RangeSearchVisualizer",
+            "request": "launch",
+            "mainClass": "RangeSearchVisualizer",
+            "args": "Data/input10K.txt"
+        },
     ]
 }
