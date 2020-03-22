@@ -106,7 +106,7 @@ public class PointSET {
             double px = point.x();
             double py = point.y();
 
-            if (((px - xmin) * (px - xmax) < 0.0) && ((py - ymin) * (py - ymax) < 0.0)) {
+            if (((px - xmin) * (px - xmax) <= 0.0) && ((py - ymin) * (py - ymax) <= 0.0)) {
                 inRange.add(point);
             }
         }
@@ -149,36 +149,11 @@ public class PointSET {
     public static void main(String[] args) {
 
         PointSET testSET = new PointSET();
-        Point2D p1 = new Point2D(1,3);
-        Point2D p2 = new Point2D(-3,3);
-        Point2D p3 = new Point2D(2,-5);
-        Point2D p4 = new Point2D(2.3,2);
-        Point2D p5 = new Point2D(-8,4);
-        Point2D p6 = new Point2D(-3.3,5);
-        Point2D p7 = new Point2D(3,6);
-        Point2D p8 = new Point2D(1.2,-4);
-        Point2D p9 = new Point2D(5.2,-2);
-        Point2D p10 = new Point2D(-4,3.6);
-        Point2D p0 = new Point2D(-1,3.6);
-        Point2D liar = new Point2D(-4,3.6);
-        Point2D t1 = new Point2D(1, 0.5);
+        Point2D t1 = new Point2D(0, 0.5);
         Point2D t2 = new Point2D(0, 1);
-        RectHV rect = new RectHV(0.25, 0.75, 0.75, 1);
-        // testSET.insert(p1);
-        // testSET.insert(p2);
-        // testSET.insert(p3);
-        // testSET.insert(p4);
-        // testSET.insert(p5);
-        // testSET.insert(p6);
-        // testSET.insert(p7);
-        // testSET.insert(p8);
-        // testSET.insert(p9);
-        // testSET.insert(p10);
+        RectHV rect = new RectHV(0.0, 0.25,0.25, 0.75);
         testSET.insert(t1);
         testSET.insert(t2);
-        // StdOut.println("p1 nearest: "+testSET.nearest(p1));
-        // StdOut.println("Is p0 contains: "+testSET.contains(p0));
-        // StdOut.println("Is liar contains: "+testSET.contains(liar));
         for (Point2D point : testSET.range(rect)){
             StdOut.print(point+"\t");
         }

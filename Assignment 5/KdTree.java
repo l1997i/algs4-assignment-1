@@ -1,8 +1,7 @@
-import edu.princeton.cs.algs4.Bag;
+import java.util.ArrayList;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.StdOut;
 
 /**
  * The {@code KdTree} class represents a set of points in the unit square (all
@@ -37,6 +36,10 @@ public class KdTree {
         private int val; // associated data
         private Node left, right; // left and right subtrees
         private int size; // number of nodes in subtree
+        private float xmin = 0;
+        private float xmax = 1;
+        private float ymin = 0;
+        private float ymax = 1;
 
         public Node(Point2D key, int val, int size) {
             this.key = key;
@@ -48,21 +51,33 @@ public class KdTree {
     private int comparePoint2D(Point2D a, Point2D b, int times) {
         double aCompare = 0.0;
         double bCompare = 0.0;
+        double optionCompare = 0.0;
+        double eps = 1e-7;
         if (times % 2 == 0) {
             aCompare = a.x();
             bCompare = b.x();
+            if (Math.abs(aCompare - bCompare) < eps) {
+                optionCompare = a.y() - b.y();
+            }
         } else {
             aCompare = a.y();
             bCompare = b.y();
+
+            if (Math.abs(aCompare - bCompare) < eps) {
+                optionCompare = a.x() - b.x();
+            }
         }
 
-        if (aCompare < bCompare) {
+        if (aCompare - bCompare < 0) {
             return -1;
-        } else if (aCompare > bCompare) {
+        } else if (aCompare - bCompare > 0) {
             return 1;
-        } else {
-            return 0;
+        } else if (optionCompare < 0) {
+            return -1;
+        } else if (optionCompare > 0) {
+            return 1;
         }
+        return 0;
     }
 
     private void add(Point2D key, int val) {
@@ -76,15 +91,74 @@ public class KdTree {
             return new Node(key, val, 1);
 
         int cmp = comparePoint2D(key, x.key, times);
-        if (cmp < 0)
+        if (cmp < 0) {
             x.left = add(x.left, key, val, ++times);
-        else if (cmp > 0)
+            updateSplitRange(x, times - 1, cmp);
+        } else if (cmp > 0) {
             x.right = add(x.right, key, val, ++times);
-        else
+            updateSplitRange(x, times - 1, cmp);
+        } else
             x.val = val;
 
         x.size = 1 + size(x.left) + size(x.right);
         return x;
+    }
+
+    /**
+     * update the range which is created by line splits
+     * 
+     * @param x
+     * @param times
+     * @param flag  1 for right/top branch, -1 for left/bottom branch
+     */
+    private void updateSplitRange(Node parentNode, int times, int flag) {
+
+        // if (parentNode != null && parentNode.left != null) { // initialize left child
+        // node
+        // parentNode.left.xmax = parentNode.xmax;
+        // parentNode.left.xmin = parentNode.xmin;
+        // parentNode.left.ymax = parentNode.ymax;
+        // parentNode.left.ymin = parentNode.ymin;
+        // }
+        // if (parentNode != null && parentNode.right != null) { // initialize right
+        // child node
+        // parentNode.right.xmax = parentNode.xmax;
+        // parentNode.right.xmin = parentNode.xmin;
+        // parentNode.right.ymax = parentNode.ymax;
+        // parentNode.right.ymin = parentNode.ymin;
+        // }
+
+        if (times % 2 == 0) { // vertical splits
+            float parentx = (float) parentNode.key.x();
+            if (flag < 0) {
+                parentNode.left.xmax = parentx;
+
+                parentNode.left.xmin = parentNode.xmin;
+                parentNode.left.ymax = parentNode.ymax;
+                parentNode.left.ymin = parentNode.ymin;
+            } else if (flag > 0) {
+                parentNode.right.xmin = parentx;
+
+                parentNode.right.xmax = parentNode.xmax;
+                parentNode.right.ymax = parentNode.ymax;
+                parentNode.right.ymin = parentNode.ymin;
+            }
+        } else { // horizontal splits
+            float parenty = (float) parentNode.key.y();
+            if (flag < 0) {
+                parentNode.left.ymax = parenty;
+
+                parentNode.left.xmax = parentNode.xmax;
+                parentNode.left.xmin = parentNode.xmin;
+                parentNode.left.ymin = parentNode.ymin;
+            } else if (flag > 0) {
+                parentNode.right.ymin = parenty;
+
+                parentNode.right.xmax = parentNode.xmax;
+                parentNode.right.xmin = parentNode.xmin;
+                parentNode.right.ymax = parentNode.ymax;
+            }
+        }
     }
 
     /**
@@ -181,24 +255,24 @@ public class KdTree {
     }
 
     private void draw(Node x, Point2D parentPoint, int times) {
-        // BUG: There will be overlap between split lines
-
         if (x == null) {
             return;
         }
+        StdDraw.setPenColor();
+        StdDraw.setFont(StdDraw.getFont().deriveFont(8));
+        StdDraw.text(x.key.x(), x.key.y() - 0.025, x.val + x.key.toString());
 
         StdDraw.setPenRadius(0.02);
         StdDraw.setPenColor(StdDraw.BLACK);
         x.key.draw();
         StdDraw.setPenRadius();
+        StdDraw.setPenColor();
 
-        double minSize = 0.0;
-        double maxSize = 1.0;
         Point2D currentPoint = x.key;
 
-        if (parentPoint == null) { // red lines for vertical splits
+        if (parentPoint == null) {
             StdDraw.setPenColor(StdDraw.RED);
-            StdDraw.line(currentPoint.x(), minSize, currentPoint.x(), maxSize);
+            StdDraw.line(currentPoint.x(), x.ymin, currentPoint.x(), x.ymax);
             draw(root.left, root.key, 0);
             draw(root.right, root.key, 0);
             return;
@@ -211,20 +285,20 @@ public class KdTree {
             double parentx = parentPoint.x();
             if (cmpFlag == -1) {
                 StdDraw.setPenColor(StdDraw.BLUE);
-                StdDraw.line(minSize, currenty, parentx, currenty);
+                StdDraw.line(x.xmin, currenty, parentx, currenty);
             } else {
                 StdDraw.setPenColor(StdDraw.BLUE);
-                StdDraw.line(maxSize, currenty, parentx, currenty);
+                StdDraw.line(x.xmax, currenty, parentx, currenty);
             }
         } else { // red lines for vertical splits
             double currentx = currentPoint.x();
             double parenty = parentPoint.y();
             if (cmpFlag == -1) {
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.line(currentx, minSize, currentx, parenty);
+                StdDraw.line(currentx, x.ymin, currentx, parenty);
             } else {
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.line(currentx, maxSize, currentx, parenty);
+                StdDraw.line(currentx, x.ymax, currentx, parenty);
             }
         }
 
@@ -252,58 +326,29 @@ public class KdTree {
      * @return an Iterable {@code Point2D} variable
      */
     public Iterable<Point2D> range(RectHV rect) {
-
-        Bag<Point2D> pointsInRange = new Bag<>();
-
-        if (rect == null) { // corner cases
-            throw new IllegalArgumentException();
-        }
-
-        double xmin = rect.xmin();
-        double xmax = rect.xmax();
-        double ymin = rect.ymin();
-        double ymax = rect.ymax();
-        Point2D minPoint = new Point2D(xmin, ymin);
-        Point2D maxPoint = new Point2D(xmax, ymax);
-
-        search(pointsInRange, root, minPoint, maxPoint, 0);
-        return pointsInRange;
-
+        // all points that are inside the rectangle (or on the boundary)
+        if (rect == null)
+            throw new IllegalArgumentException("RectHV rect is not illegal!");
+        if (root != null)
+            return range(root, rect);
+        else
+            return new ArrayList<Point2D>();
     }
 
-    private void search(Bag<Point2D> pointsInRange, Node x, Point2D minPoint, Point2D maxPoint, int times) {
+    private ArrayList<Point2D> range(Node x, RectHV rect) {
 
-        if (x == null) {
-            // All node in the subtrees is searched
-            return;
+        RectHV xRect = new RectHV(x.xmin, x.ymin, x.xmax, x.ymax);
+
+        ArrayList<Point2D> points = new ArrayList<Point2D>();
+        if (xRect.intersects(rect)) {
+            if (rect.contains(x.key))
+                points.add(x.key);
+            if (x.left != null)
+                points.addAll(range(x.left, rect));
+            if (x.right != null)
+                points.addAll(range(x.right, rect));
         }
-
-        Point2D currentPoint = x.key;
-        addInRange(pointsInRange, currentPoint, minPoint, maxPoint);
-
-        int isLess = comparePoint2D(minPoint, currentPoint, times);
-        int isGreater = comparePoint2D(maxPoint, currentPoint, times);
-
-        if (isLess == -1) {
-            if (x.left == null) {
-                return;
-            }
-            search(pointsInRange, x.left, minPoint, maxPoint, ++times);
-        }
-
-        if (isGreater == 1) {
-            if (x.right == null) {
-                return;
-            }
-            search(pointsInRange, x.right, minPoint, maxPoint, ++times);
-        }
-    }
-
-    private void addInRange(Bag<Point2D> pointsInRange, Point2D currentPoint, Point2D minPoint, Point2D maxPoint) {
-        if ((currentPoint.x() < maxPoint.x() && currentPoint.x() > minPoint.x())
-                && (currentPoint.y() < maxPoint.y() && currentPoint.y() > minPoint.y())) {
-            pointsInRange.add(currentPoint);
-        }
+        return points;
     }
 
     /**
@@ -321,102 +366,72 @@ public class KdTree {
      * contain a point that is closer than the best one found so far. The
      * effectiveness of the pruning rule depends on quickly finding a nearby point.
      * To do this, organize the recursive method so that when there are two possible
-     * subtrees to go down, you always choose the subtree that is on the same side
-     * of the splitting line as the query point as the first subtree to explore—the
-     * closest point found while exploring the first subtree may enable pruning of
-     * the second subtree.
+     * subtrees to go down, <b>you always choose the subtree that is on the same
+     * side</b> of the splitting line as the query point as the first subtree to
+     * explore—the closest point found while exploring the first subtree may enable
+     * pruning of the second subtree.
      * </p>
      * 
      * @param p the point which is in the set
      * @throws IllegalArgumentException if {@code p} is {@code null}
      * @return null if the set is empty, otherwise a {@code Point2D} p
      */
-    public Point2D nearest(Point2D p) {
-        if (p == null) { // corner cases
-            throw new IllegalArgumentException();
-        }
-        return nearest(p, root.key, root, Double.POSITIVE_INFINITY, 0);
 
+    public Point2D nearest(Point2D p) {
+        if (p == null)
+            throw new IllegalArgumentException("Point2D p is not illegal!");
+        if (root != null)
+            return nearest(root, p, root.key, 0);
+        return null;
     }
 
-    private Point2D nearest(Point2D p, Point2D nearestp, Node currentNode, double d, int times) {
+    private Point2D nearest(Node x, Point2D p, Point2D currNearPoint, int times) {
 
-        if (currentNode == null) {
-            return nearestp;
+        if (x.key.equals(p))
+            return x.key;
+        double currMinDistance = currNearPoint.distanceTo(p);
+        RectHV xRect = new RectHV(x.xmin, x.ymin, x.xmax, x.ymax);
+        if (Double.compare(xRect.distanceTo(p), currMinDistance) >= 0)
+            return currNearPoint;
+        else {
+            double distance = x.key.distanceTo(p);
+            if (Double.compare(distance, currMinDistance) == -1) {
+                currNearPoint = x.key;
+                currMinDistance = distance;
+            }
+            RectHV xLeftRect = null;
+            RectHV xRightRect = null;
+            if (x.left != null) {
+                xLeftRect = new RectHV(x.left.xmin, x.left.ymin, x.left.xmax, x.left.ymax);
+            }
+            if (x.right != null) {
+                xRightRect = new RectHV(x.right.xmin, x.right.ymin, x.right.xmax, x.right.ymax);
+            }
+
+            float side = comparePoint2D(p, x.key, times);
+
+            if (xLeftRect != null && side == -1) {
+                if (x.left != null && Double.compare(xLeftRect.distanceTo(p), currNearPoint.distanceTo(p)) < 0) {
+                    currNearPoint = nearest(x.left, p, currNearPoint, times + 1);
+                }
+
+                if (x.right != null && Double.compare(xRightRect.distanceTo(p), currNearPoint.distanceTo(p)) < 0)
+                    currNearPoint = nearest(x.right, p, currNearPoint, times + 1);
+            } else {
+                if (x.right != null && Double.compare(xRightRect.distanceTo(p), currNearPoint.distanceTo(p)) < 0) {
+                    currNearPoint = nearest(x.right, p, currNearPoint, times + 1);
+                }
+                if (x.left != null && Double.compare(xLeftRect.distanceTo(p), currNearPoint.distanceTo(p)) < 0)
+                    currNearPoint = nearest(x.left, p, currNearPoint, times + 1);
+            }
+
         }
-
-        Point2D currentp = currentNode.key;
-        double curNearestD = 0.0;
-        double curD = p.distanceTo(currentp);
-        Point2D newPoint;
-
-        curNearestD = Math.min(Math.abs(p.x() - currentp.x()), Math.abs(p.y() - currentp.y()));
-
-        int cmpFlag = comparePoint2D(p, currentp, times);
-
-        if (curNearestD >= d) { // pruning, search only one branch
-            if (curD < d) { // update the nearest point and distance
-                nearestp = currentp;
-                d = curD;
-            }
-            if (cmpFlag == -1) { // search left/bottom branch
-                newPoint = nearest(p, nearestp, currentNode.left, curD, ++times);
-            } else { // search right/top branch
-                newPoint = nearest(p, nearestp, currentNode.right, curD, ++times);
-            }
-        } else { // search both branches
-            if (curD < d) { // update the nearest point and distance
-                nearestp = currentp;
-                d = curD;
-            }
-            int currTimes = times;
-            newPoint = nearest(p, nearestp, currentNode.left, curD, currTimes + 1);
-            newPoint = nearest(p, newPoint, currentNode.right, curD, currTimes + 1);
-        }
-
-        return newPoint;
+        return currNearPoint;
     }
 
     // unit testing of the methods
     public static void main(String[] args) {
-        KdTree testSET = new KdTree();
-        Point2D p1 = new Point2D(0.372, 0.497);
-        Point2D p2 = new Point2D(0.564, 0.413);
-        Point2D p3 = new Point2D(0.226, 0.577);
-        Point2D p4 = new Point2D(0.144, 0.179);
-        Point2D p5 = new Point2D(0.083, 0.51);
-        Point2D p6 = new Point2D(0.32, 0.708);
-        Point2D p7 = new Point2D(0.417, 0.362);
-        Point2D p8 = new Point2D(0.862, 0.825);
-        Point2D p9 = new Point2D(0.785, 0.725);
-        Point2D p10 = new Point2D(0.499, 0.208);
 
-        Point2D p = new Point2D(0.29, 0.306);
-
-        RectHV rect = new RectHV(0.1, 0.1, 0.6, 0.6);
-        testSET.insert(p1);
-        testSET.insert(p2);
-        testSET.insert(p3);
-        testSET.insert(p4);
-        testSET.insert(p5);
-        testSET.insert(p6);
-        testSET.insert(p7);
-        testSET.insert(p8);
-        testSET.insert(p9);
-        testSET.insert(p10);
-
-        StdOut.println("Is p3 contains: " + testSET.contains(p3));
-        StdOut.println("Is p1 contains: " + testSET.contains(p1));
-        StdOut.println("Is p contains: " + testSET.contains(p));
-        StdOut.println("p's nearest point: " + testSET.nearest(p));
-
-        // test method: range(rect)
-        for (Point2D point : testSET.range(rect)) {
-            StdOut.println(point);
-        }
-
-        StdOut.println("nearest to p" + testSET.nearest(p3));
-
-        testSET.draw();
     }
+
 }
