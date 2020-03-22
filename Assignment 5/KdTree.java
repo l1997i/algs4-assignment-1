@@ -113,21 +113,6 @@ public class KdTree {
      */
     private void updateSplitRange(Node parentNode, int times, int flag) {
 
-        // if (parentNode != null && parentNode.left != null) { // initialize left child
-        // node
-        // parentNode.left.xmax = parentNode.xmax;
-        // parentNode.left.xmin = parentNode.xmin;
-        // parentNode.left.ymax = parentNode.ymax;
-        // parentNode.left.ymin = parentNode.ymin;
-        // }
-        // if (parentNode != null && parentNode.right != null) { // initialize right
-        // child node
-        // parentNode.right.xmax = parentNode.xmax;
-        // parentNode.right.xmin = parentNode.xmin;
-        // parentNode.right.ymax = parentNode.ymax;
-        // parentNode.right.ymin = parentNode.ymin;
-        // }
-
         if (times % 2 == 0) { // vertical splits
             float parentx = (float) parentNode.key.x();
             if (flag < 0) {
