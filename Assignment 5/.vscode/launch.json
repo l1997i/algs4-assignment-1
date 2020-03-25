@@ -6,9 +6,9 @@
     "configurations": [
         {
             "type": "java",
-            "name": "CodeLens (Launch) - KdTreeVisualizer",
+            "name": "CodeLens (Launch) - Test",
             "request": "launch",
-            "mainClass": "KdTreeVisualizer",
+            "mainClass": "Test",
             "projectName": "Assignment 5_ec84295b"
         },
         {
@@ -22,6 +22,19 @@
             "name": "KdTree",
             "request": "launch",
             "mainClass": "KdTree"
+        },
+        {
+            "type": "java",
+            "name": "RangeSearchVisualizer",
+            "request": "launch",
+            "mainClass": "RangeSearchVisualizer",
+            "args": "Data/input10.txt"
+        },
+        {
+            "type": "java",
+            "name": "KdTreeVisualizer",
+            "request": "launch",
+            "mainClass": "KdTreeVisualizer"
         }
     ]
 }

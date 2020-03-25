@@ -1,9 +1,7 @@
-import edu.princeton.cs.algs4.BST;
-import edu.princeton.cs.algs4.Bag;
+import java.util.ArrayList;
 import edu.princeton.cs.algs4.Point2D;
-import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
-import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdDraw;
 
 /**
  * The {@code KdTree} class represents a set of points in the unit square (all
@@ -25,160 +23,126 @@ import edu.princeton.cs.algs4.StdOut;
  */
 public class KdTree {
 
-    private xyBST<Point2D, Integer> points;
-
     /**
      * construct an empty set of points
      */
     public KdTree() {
-        points = new xyBST<>();
+    }
 
+    private Node root; // root of BST
+
+    private class Node {
+        private Point2D key; // sorted by key
+        private int val; // associated data
+        private Node left, right; // left and right subtrees
+        private int size; // number of nodes in subtree
+        private float xmin = 0;
+        private float xmax = 1;
+        private float ymin = 0;
+        private float ymax = 1;
+
+        public Node(Point2D key, int val, int size) {
+            this.key = key;
+            this.val = val;
+            this.size = size;
+        }
+    }
+
+    private int comparePoint2D(Point2D a, Point2D b, int times) {
+        double aCompare = 0.0;
+        double bCompare = 0.0;
+        double optionCompare = 0.0;
+        double eps = 1e-7;
+        if (times % 2 == 0) {
+            aCompare = a.x();
+            bCompare = b.x();
+            if (Math.abs(aCompare - bCompare) < eps) {
+                optionCompare = a.y() - b.y();
+            }
+        } else {
+            aCompare = a.y();
+            bCompare = b.y();
+
+            if (Math.abs(aCompare - bCompare) < eps) {
+                optionCompare = a.x() - b.x();
+            }
+        }
+
+        if (aCompare - bCompare < 0) {
+            return -1;
+        } else if (aCompare - bCompare > 0) {
+            return 1;
+        } else if (optionCompare < 0) {
+            return -1;
+        } else if (optionCompare > 0) {
+            return 1;
+        }
+        return 0;
+    }
+
+    private void add(Point2D key, int val) {
+        if (key == null)
+            throw new IllegalArgumentException("calls add() with a null key");
+        root = add(root, key, val, 0);
+    }
+
+    private Node add(Node x, Point2D key, int val, int times) {
+        if (x == null)
+            return new Node(key, val, 1);
+
+        int cmp = comparePoint2D(key, x.key, times);
+        if (cmp < 0) {
+            x.left = add(x.left, key, val, ++times);
+            updateSplitRange(x, times - 1, cmp);
+        } else if (cmp > 0) {
+            x.right = add(x.right, key, val, ++times);
+            updateSplitRange(x, times - 1, cmp);
+        } else
+            x.val = val;
+
+        x.size = 1 + size(x.left) + size(x.right);
+        return x;
     }
 
     /**
-     * <p>
-     * This is a private class from KdTree which is another BST implementation of
-     * {@code Point2D} set.
-     * </p>
+     * update the range which is created by line splits
      * 
-     * <p>
-     * Its insert operation is a bit different from normal {@code BST} At the root
-     * use the x-coordinates (if the point to be inserted has a smaller x-coordinate
-     * than the point at the root, go left; otherwise go right); then at the next
-     * level, we use the y-coordinate (if the point to be inserted has a smaller
-     * y-coordinate than the point at the root, go left; otherwise go right); then
-     * at the next level the x-coordinate, and so forth.
-     * </p>
-     * 
-     * @param <Key>   {@code Point2D} to be inserted
-     * @param <Value> associated data
-     * @author Li Li
-     * @since Mar. 20, 2020
+     * @param x
+     * @param times
+     * @param flag  1 for right/top branch, -1 for left/bottom branch
      */
+    private void updateSplitRange(Node parentNode, int times, int flag) {
 
-    private class xyBST<Key extends Comparable<Key>, Value> extends BST<Point2D, Integer> {
-        private Node root; // root of BST
+        if (times % 2 == 0) { // vertical splits
+            float parentx = (float) parentNode.key.x();
+            if (flag < 0) {
+                parentNode.left.xmax = parentx;
 
-        private class Node {
-            private Key key; // sorted by key
-            private Value val; // associated data
-            private Node left, right; // left and right subtrees
-            private int size; // number of nodes in subtree
+                parentNode.left.xmin = parentNode.xmin;
+                parentNode.left.ymax = parentNode.ymax;
+                parentNode.left.ymin = parentNode.ymin;
+            } else if (flag > 0) {
+                parentNode.right.xmin = parentx;
 
-            public Node(Key key, Value val, int size) {
-                this.key = key;
-                this.val = val;
-                this.size = size;
+                parentNode.right.xmax = parentNode.xmax;
+                parentNode.right.ymax = parentNode.ymax;
+                parentNode.right.ymin = parentNode.ymin;
             }
-        }
+        } else { // horizontal splits
+            float parenty = (float) parentNode.key.y();
+            if (flag < 0) {
+                parentNode.left.ymax = parenty;
 
-        /**
-         * Returns all keys in the symbol table in the given range, as an
-         * {@code Iterable}.
-         *
-         * @param lo minimum endpoint
-         * @param hi maximum endpoint
-         * @return all keys in the symbol table between {@code lo} (inclusive) and
-         *         {@code hi} (inclusive)
-         * @throws IllegalArgumentException if either {@code lo} or {@code hi} is
-         *                                  {@code null}
-         */
+                parentNode.left.xmax = parentNode.xmax;
+                parentNode.left.xmin = parentNode.xmin;
+                parentNode.left.ymin = parentNode.ymin;
+            } else if (flag > 0) {
+                parentNode.right.ymin = parenty;
 
-        public Iterable<Point2D> keys() {
-            return keys(min(), max());
-        }
-
-        public Iterable<Point2D> keys(Point2D lo, Point2D hi) {
-
-            if (lo == null)
-                throw new IllegalArgumentException("first argument to keys() is null");
-            if (hi == null)
-                throw new IllegalArgumentException("second argument to keys() is null");
-
-            Queue<Point2D> queue = new Queue<Point2D>();
-            keys(root, queue, lo, hi, 0);
-            return queue;
-        }
-
-        private void keys(Node x, Queue<Point2D> queue, Point2D lo, Point2D hi, int times) {
-            if (x == null)
-                return;
-
-            double loCompare = 0;
-            double hiCompare = 0;
-            double xCompare = 0;
-            if (times % 2 == 0) {
-                loCompare = lo.x();
-                hiCompare = hi.x();
-                xCompare = ((Point2D)x.key).x();
-            } else {
-                loCompare = lo.y();
-                hiCompare = hi.y();
-                xCompare = ((Point2D)x.key).y();
+                parentNode.right.xmax = parentNode.xmax;
+                parentNode.right.xmin = parentNode.xmin;
+                parentNode.right.ymax = parentNode.ymax;
             }
-
-            int cmplo = comparexy(loCompare, xCompare);
-            int cmphi = comparexy(hiCompare, xCompare);
-            if (cmplo < 0)
-                keys(x.left, queue, lo, hi, ++times);
-            if (cmplo <= 0 && cmphi >= 0)
-                queue.enqueue((Point2D)x.key);
-            if (cmphi > 0)
-                keys(x.right, queue, lo, hi, ++times);
-        }
-
-        private int size(Node x) {
-            if (x == null) {
-                return 0;
-            } else {
-                return x.size;
-            }
-        }
-
-        private int comparexy(double a, double b) {
-            if (a < b) {
-                return -1;
-            } else if (a > b) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-
-        public void add(Key key, Value val) {
-            if (key == null)
-                throw new IllegalArgumentException("calls add() with a null key");
-            if (val == null) {
-                // delete(key);
-                return;
-            }
-            root = add(root, key, val, 0);
-        }
-
-        private Node add(Node x, Key key, Value val, int times) {
-            if (x == null)
-                return new Node(key, val, 1);
-
-            double keyCompare = 0;
-            double xCompare = 0;
-            if (times % 2 == 0) {
-                keyCompare = ((Point2D) key).x();
-                xCompare = ((Point2D) x.key).x();
-            } else {
-                keyCompare = ((Point2D) key).y();
-                xCompare = ((Point2D) x.key).y();
-            }
-
-            int cmp = comparexy(keyCompare, xCompare);
-            if (cmp < 0)
-                x.left = add(x.left, key, val, ++times);
-            else if (cmp > 0)
-                x.right = add(x.right, key, val, ++times);
-            else
-                x.val = val;
-
-            x.size = 1 + size(x.left) + size(x.right);
-            return x;
         }
     }
 
@@ -188,7 +152,7 @@ public class KdTree {
      * @return true if is empty, otherwise false
      */
     public boolean isEmpty() {
-        return points.isEmpty();
+        return size() == 0;
     }
 
     /**
@@ -197,7 +161,15 @@ public class KdTree {
      * @return number of points in the set
      */
     public int size() {
-        return points.size();
+        return size(root);
+    }
+
+    private int size(Node x) {
+        if (x == null) {
+            return 0;
+        } else {
+            return x.size;
+        }
     }
 
     /**
@@ -212,7 +184,7 @@ public class KdTree {
             throw new IllegalArgumentException();
         }
         if (!contains(p)) {
-            points.add(p, points.size());
+            add(p, size());
         }
 
     }
@@ -228,7 +200,21 @@ public class KdTree {
         if (p == null) { // corner cases
             throw new IllegalArgumentException();
         }
-        return points.contains(p);
+        return find(root, p, 0) != -1;
+    }
+
+    private int find(Node x, Point2D currentp, int times) {
+        if (currentp == null)
+            throw new IllegalArgumentException("calls find() with a null point");
+        if (x == null)
+            return -1;
+        int cmp = comparePoint2D(currentp, x.key, times);
+        if (cmp < 0)
+            return find(x.left, currentp, ++times);
+        else if (cmp > 0)
+            return find(x.right, currentp, ++times);
+        else
+            return x.val;
     }
 
     /**
@@ -245,11 +231,65 @@ public class KdTree {
      * </p>
      */
     public void draw() {
-        // TODO: draw()
+        StdDraw.setPenRadius(0.02);
+        StdDraw.setPenColor(StdDraw.BLACK);
+        root.key.draw();
+        StdDraw.setPenRadius();
+        draw(root, null, 0);
 
-        for (Point2D point : points.keys()) {
-            point.draw();
+    }
+
+    private void draw(Node x, Point2D parentPoint, int times) {
+        if (x == null) {
+            return;
         }
+        StdDraw.setPenColor();
+        StdDraw.setFont(StdDraw.getFont().deriveFont(8));
+        StdDraw.text(x.key.x(), x.key.y() - 0.025, x.val + x.key.toString());
+
+        StdDraw.setPenRadius(0.02);
+        StdDraw.setPenColor(StdDraw.BLACK);
+        x.key.draw();
+        StdDraw.setPenRadius();
+        StdDraw.setPenColor();
+
+        Point2D currentPoint = x.key;
+
+        if (parentPoint == null) {
+            StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.line(currentPoint.x(), x.ymin, currentPoint.x(), x.ymax);
+            draw(root.left, root.key, 0);
+            draw(root.right, root.key, 0);
+            return;
+        }
+
+        int cmpFlag = comparePoint2D(currentPoint, parentPoint, times);
+
+        if (times % 2 == 0) { // blue lines for horizontal splits
+            double currenty = currentPoint.y();
+            double parentx = parentPoint.x();
+            if (cmpFlag == -1) {
+                StdDraw.setPenColor(StdDraw.BLUE);
+                StdDraw.line(x.xmin, currenty, parentx, currenty);
+            } else {
+                StdDraw.setPenColor(StdDraw.BLUE);
+                StdDraw.line(x.xmax, currenty, parentx, currenty);
+            }
+        } else { // red lines for vertical splits
+            double currentx = currentPoint.x();
+            double parenty = parentPoint.y();
+            if (cmpFlag == -1) {
+                StdDraw.setPenColor(StdDraw.RED);
+                StdDraw.line(currentx, x.ymin, currentx, parenty);
+            } else {
+                StdDraw.setPenColor(StdDraw.RED);
+                StdDraw.line(currentx, x.ymax, currentx, parenty);
+            }
+        }
+
+        int currentTimes = times + 1;
+        draw(x.left, x.key, currentTimes);
+        draw(x.right, x.key, currentTimes);
     }
 
     /**
@@ -271,13 +311,29 @@ public class KdTree {
      * @return an Iterable {@code Point2D} variable
      */
     public Iterable<Point2D> range(RectHV rect) {
-        // TODO: range(RectHV rect)
+        // all points that are inside the rectangle (or on the boundary)
+        if (rect == null)
+            throw new IllegalArgumentException("RectHV rect is not illegal!");
+        if (root != null)
+            return range(root, rect);
+        else
+            return new ArrayList<Point2D>();
+    }
 
-        if (rect == null) { // corner cases
-            throw new IllegalArgumentException();
+    private ArrayList<Point2D> range(Node x, RectHV rect) {
+
+        RectHV xRect = new RectHV(x.xmin, x.ymin, x.xmax, x.ymax);
+
+        ArrayList<Point2D> points = new ArrayList<Point2D>();
+        if (xRect.intersects(rect)) {
+            if (rect.contains(x.key))
+                points.add(x.key);
+            if (x.left != null)
+                points.addAll(range(x.left, rect));
+            if (x.right != null)
+                points.addAll(range(x.right, rect));
         }
-        return new Bag<>();
-
+        return points;
     }
 
     /**
@@ -295,51 +351,72 @@ public class KdTree {
      * contain a point that is closer than the best one found so far. The
      * effectiveness of the pruning rule depends on quickly finding a nearby point.
      * To do this, organize the recursive method so that when there are two possible
-     * subtrees to go down, you always choose the subtree that is on the same side
-     * of the splitting line as the query point as the first subtree to explore—the
-     * closest point found while exploring the first subtree may enable pruning of
-     * the second subtree.
+     * subtrees to go down, <b>you always choose the subtree that is on the same
+     * side</b> of the splitting line as the query point as the first subtree to
+     * explore—the closest point found while exploring the first subtree may enable
+     * pruning of the second subtree.
      * </p>
      * 
      * @param p the point which is in the set
      * @throws IllegalArgumentException if {@code p} is {@code null}
      * @return null if the set is empty, otherwise a {@code Point2D} p
      */
-    public Point2D nearest(Point2D p) {
-        // TODO: nearest(Point2D p)
-        if (p == null) { // corner cases
-            throw new IllegalArgumentException();
-        }
-        return new Point2D(0, 0);
 
+    public Point2D nearest(Point2D p) {
+        if (p == null)
+            throw new IllegalArgumentException("Point2D p is not illegal!");
+        if (root != null)
+            return nearest(root, p, root.key, 0);
+        return null;
+    }
+
+    private Point2D nearest(Node x, Point2D p, Point2D currNearPoint, int times) {
+
+        if (x.key.equals(p))
+            return x.key;
+        double currMinDistance = currNearPoint.distanceTo(p);
+        RectHV xRect = new RectHV(x.xmin, x.ymin, x.xmax, x.ymax);
+        if (Double.compare(xRect.distanceTo(p), currMinDistance) >= 0)
+            return currNearPoint;
+        else {
+            double distance = x.key.distanceTo(p);
+            if (Double.compare(distance, currMinDistance) == -1) {
+                currNearPoint = x.key;
+                currMinDistance = distance;
+            }
+            RectHV xLeftRect = null;
+            RectHV xRightRect = null;
+            if (x.left != null) {
+                xLeftRect = new RectHV(x.left.xmin, x.left.ymin, x.left.xmax, x.left.ymax);
+            }
+            if (x.right != null) {
+                xRightRect = new RectHV(x.right.xmin, x.right.ymin, x.right.xmax, x.right.ymax);
+            }
+
+            float side = comparePoint2D(p, x.key, times);
+
+            if (xLeftRect != null && side == -1) {
+                if (x.left != null && Double.compare(xLeftRect.distanceTo(p), currNearPoint.distanceTo(p)) < 0) {
+                    currNearPoint = nearest(x.left, p, currNearPoint, times + 1);
+                }
+
+                if (x.right != null && Double.compare(xRightRect.distanceTo(p), currNearPoint.distanceTo(p)) < 0)
+                    currNearPoint = nearest(x.right, p, currNearPoint, times + 1);
+            } else {
+                if (x.right != null && Double.compare(xRightRect.distanceTo(p), currNearPoint.distanceTo(p)) < 0) {
+                    currNearPoint = nearest(x.right, p, currNearPoint, times + 1);
+                }
+                if (x.left != null && Double.compare(xLeftRect.distanceTo(p), currNearPoint.distanceTo(p)) < 0)
+                    currNearPoint = nearest(x.left, p, currNearPoint, times + 1);
+            }
+
+        }
+        return currNearPoint;
     }
 
     // unit testing of the methods
     public static void main(String[] args) {
-        KdTree testSET = new KdTree();
-        Point2D p1 = new Point2D(.7, .2);
-        Point2D p2 = new Point2D(.5, .4);
-        Point2D p3 = new Point2D(.2, .3);
-        Point2D p4 = new Point2D(.4, .7);
-        Point2D p5 = new Point2D(.9, .6);
-        // Point2D p6 = new Point2D(-3.3, 5);
-        // Point2D p7 = new Point2D(3, 6);
-        // Point2D p8 = new Point2D(1.2, -4);
-        // Point2D p9 = new Point2D(5.2, -2);
-        // Point2D p10 = new Point2D(-4, 3.6);
-        // Point2D p0 = new Point2D(-1, 3.6);
-        // Point2D liar = new Point2D(-4, 3.6);
-        RectHV rect = new RectHV(-4, -4, 4, 4);
-        testSET.insert(p1);
-        testSET.insert(p2);
-        testSET.insert(p3);
-        testSET.insert(p4);
-        testSET.insert(p5);
-        // testSET.insert(p6);
-        // testSET.insert(p7);
-        // testSET.insert(p8);
-        // testSET.insert(p9);
-        // testSET.insert(p10);
 
     }
+
 }
